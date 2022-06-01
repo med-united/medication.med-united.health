@@ -1,35 +1,3 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: medication-ens
-spec:
-  type: ExternalName
-  externalName: apotheken-umschau.de
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: medication-ens-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/upstream-vhost: "apotheken-umschau.de"
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-spec:
-  rules:
-  - host: medication.med-united.health
-    http:
-      paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: medication-ens
-              port:
-                number: 443
-
----
-
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -43,4 +11,34 @@ spec:
     name: letsencrypt-cluster-issuer
     kind: ClusterIssuer
 
+---
 
+kind: Service
+apiVersion: v1
+metadata:
+  name: medication
+spec:
+  type: ExternalName
+  externalName: apotheken-umschau.de
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: medication-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/upstream-vhost: "apotheken-umschau.de"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  rules:
+  - host: medication.med-united.health
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: medication
+              port:
+                number: 443
